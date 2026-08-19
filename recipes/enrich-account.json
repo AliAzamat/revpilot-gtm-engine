@@ -1,0 +1,27 @@
+{
+  "name": "enrich-account",
+  "trigger": "account.created",
+  "steps": [
+    { "op": "get_account", "as": "account" },
+    {
+      "op": "enrich_field",
+      "field": "domain",
+      "providers": ["clearbit_like", "web_scrape"],
+      "into": "account"
+    },
+    {
+      "op": "enrich_field",
+      "field": "employees",
+      "providers": ["clearbit_like", "peopledata_like"],
+      "into": "account"
+    },
+    {
+      "op": "enrich_field",
+      "field": "industry",
+      "providers": ["clearbit_like"],
+      "into": "account"
+    },
+    { "op": "score_quality", "of": "account", "as": "quality" },
+    { "op": "upsert_account", "from": "account", "quality": "quality" }
+  ]
+}
